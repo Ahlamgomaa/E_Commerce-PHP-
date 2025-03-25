@@ -127,3 +127,7 @@ function deleteFile($dir,$imagename){
             exit;
         }
     }
+   function printFailure($message="none"){
+    echo json_encode(array("status"=>"Failure","message"=>$message));
+
+   }
