@@ -47,11 +47,11 @@ function updateData($table, $data, $where, $json = true)
     global $con;
     $cols = array();
     $vals = array();
-    foreach ($data as $key => $vals) {
+    foreach ($data as $key => $val) {
         $cols[] = "$key= ?";
-        $vals[] = $vals;
+        $vals[] = $val;
     }
-    $sql = "UPDATE $table SET " . implode(',', $cols) . " WHERE $where=?";
+    $sql = "UPDATE $table SET " . implode(',', $cols) . " WHERE $where";
     $stmt = $con->prepare($sql);
     $stmt->execute($vals);
     $count = $stmt->rowCount();
