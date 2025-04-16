@@ -8,17 +8,34 @@ function getAllData($table, $where = null, $value = null)
 {
     global $con;
     $data = array();
-    $stmt = $con->prepare("SELECT * FROM $table where $where=?");
-    $stmt->execute($value);
-    $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $count = $stmt->rowCount();
-    if ($count > 0) {
-        echo json_encode(array('status' => 'success', 'data' => $data));
-    } else {
-        echo json_encode(array('status' => 'failed', 'message' => 'No Data Found'));
+
+    try {
+        // If a WHERE condition is provided
+        if ($where !== null && $value !== null) {
+            $stmt = $con->prepare("SELECT * FROM $table WHERE $where = ?");
+            $stmt->execute([$value]); // wrap $value in array
+        } else {
+            // No WHERE condition
+            $stmt = $con->prepare("SELECT * FROM $table");
+            $stmt->execute();
+        }
+
+        $data = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $count = $stmt->rowCount();
+
+        if ($count > 0) {
+            echo json_encode(array('status' => 'success', 'data' => $data));
+        } else {
+            echo json_encode(array('status' => 'failed', 'message' => 'No Data Found'));
+        }
+
+        return $count;
+    } catch (PDOException $e) {
+        echo json_encode(array('status' => 'error', 'message' => $e->getMessage()));
+        return 0;
     }
-    return $count;
 }
+
 function insertData($table, $data, $json = true)
 {
     global $con;
